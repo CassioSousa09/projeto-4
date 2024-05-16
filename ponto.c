@@ -29,3 +29,33 @@ ERROS cadastrarCliente(Arquivos arquivos[], int *pos) {
 
       return OK;
   }
+
+
+
+
+  ERROS deletar(Arquivos arquivos[], int *pos) {
+    char cpf[15];
+    printf("Digite o CPF do cliente para apagar: ");
+    scanf("%14s", cpf);
+
+    int found = 0;
+    for (int i = 0; i < *pos; i++) {
+        if (strcmp(arquivos[i].cpf, cpf) == 0) {
+            found = 1;
+            for (int j = i; j < *pos - 1; j++) {
+                arquivos[j] = arquivos[j + 1];
+            }
+            (*pos)--;
+            break;
+        }
+    }
+
+    if (found) {
+        printf("Cliente apagado com sucesso!\n");
+        salvar(arquivos, pos);
+    } else {
+        printf("CPF não encontrado.\n");
+    }
+
+    return OK;
+}
