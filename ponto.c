@@ -205,3 +205,134 @@ ERROS extrato(Arquivos arquivos[], int *pos) {
 
     return OK;
 }
+
+
+
+ERROS transferencia(Arquivos arquivos[], int *pos) {
+    char cpf_origem[15], cpf_destino[15];
+    printf("Digite seu CPF: ");
+    scanf("%14s", cpf_origem);
+
+    Arquivos *origem = NULL;
+    for (int i = 0; i < *pos; i++) {
+        if (strcmp(arquivos[i].cpf, cpf_origem) == 0) {
+            origem = &arquivos[i];
+            break;
+        }
+    }
+
+    if (origem != NULL) {
+        int senha;
+        printf("Digite sua senha: ");
+        scanf("%d", &senha);
+
+        if (senha == origem->senha) {
+            printf("Digite o CPF do destinatário: ");
+            scanf("%14s", cpf_destino);
+
+            Arquivos *destino = NULL;
+            for (int i = 0; i < *pos; i++) {
+                if (strcmp(arquivos[i].cpf, cpf_destino) == 0) {
+                    destino = &arquivos[i];
+                    break;
+                }
+            }
+
+            if (destino != NULL) {
+                float valor;
+                printf("Digite o valor para transferência: ");
+                scanf("%f", &valor);
+
+                if (origem->saldo >= valor) {
+                    origem->saldo -= valor;
+                    destino->saldo += valor;
+
+                    printf("R$ %.2f foram transferidos de %s para %s.\n", valor, origem->nome, destino->nome);
+
+                    
+                    origem->transacoes[origem->num_transacoes].tipo = 'T';
+                    origem->transacoes[origem->num_transacoes].valor = -valor;
+                    origem->num_transacoes++;
+
+                    
+                    destino->transacoes[destino->num_transacoes].tipo =  'T' ;
+                    destino->transacoes[destino->num_transacoes].valor = valor;
+                    destino->num_transacoes++;
+
+                    salvar(arquivos, pos);
+                } else {
+                    printf("Saldo insuficiente para a transferência.\n");
+                }
+            } else {
+                printf("CPF do destinatário não encontrado.\n");
+            }
+        } else {
+            printf("Senha inválida.\n");
+        }
+    } else {
+        printf("CPF não encontrado.\n");
+    }
+
+    return OK;
+}
+
+
+
+
+
+
+
+
+
+ERROS salvar(Arquivos arquivos[], int *pos){
+    FILE *f = fopen("tarefas.bin", "wb");
+    if(f == NULL)
+        return ABRIR;
+
+    int qtd = fwrite(arquivos, TOTAL, sizeof(Arquivos), f);
+    if(qtd == 0)
+        return ESCREVER;
+
+    qtd = fwrite(pos, 1, sizeof(int), f);
+    if(qtd == 0)
+        return ESCREVER;
+
+    if(fclose(f))
+        return FECHAR;
+
+    return OK;
+}
+
+ERROS carregar(Arquivos arquivos[], int *pos){
+    FILE *f = fopen("tarefas.bin", "rb");
+    if(f == NULL)
+        return ABRIR;
+
+    int qtd = fread(arquivos, TOTAL, sizeof(Arquivos), f);
+    if(qtd == 0)
+        return LER;
+
+    qtd = fread(pos, 1, sizeof(int), f);
+    if(qtd == 0)
+        return LER;
+
+    if(fclose(f))
+        return FECHAR;
+
+    return OK;
+
+}
+
+
+
+
+
+
+
+
+
+void clearBuffer() {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF)
+    ;
+}
