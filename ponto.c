@@ -59,3 +59,17 @@ ERROS cadastrarCliente(Arquivos arquivos[], int *pos) {
 
     return OK;
 }
+
+
+
+
+ERROS listar(Arquivos arquivos[], int *pos) {
+    printf("Lista de clientes:\n");
+    for (int i = 0; i < *pos; i++) {
+        Arquivos cliente = arquivos[i];
+        printf("Nome: %s, CNPJ: %s, Saldo: %.2f, Tipo: %s\n",
+               cliente.nome, cliente.cpf, cliente.saldo, cliente.tipo);
+    }
+
+    return OK;
+}
