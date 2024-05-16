@@ -126,3 +126,43 @@ ERROS debito(Arquivos arquivos[], int *pos) {
 
     return OK;
 }
+
+ERROS deposito(Arquivos arquivos[], int *pos) {
+    char cpf[15];
+    printf("Digite seu CPF: ");
+    scanf("%14s", cpf);
+
+    Arquivos *cliente = NULL;
+    for (int i = 0; i < *pos; i++) {
+        if (strcmp(arquivos[i].cpf, cpf) == 0) {
+            cliente = &arquivos[i];
+            break;
+        }
+    }
+
+    if (cliente != NULL) {
+        int senha;
+        printf("Digite sua senha: ");
+        scanf("%d", &senha);
+
+        if (senha == cliente->senha) {
+            float valor;
+            printf("Digite o valor do depósito: ");
+            scanf("%f", &valor);
+
+            cliente->saldo += valor;
+            printf("R$ %.2f foram depositados em sua conta.\n", valor);
+
+            
+            cliente->transacoes[cliente->num_transacoes].tipo = 'Deposito';
+            cliente->transacoes[cliente->num_transacoes].valor = valor;
+            cliente->num_transacoes++;
+        } else {
+            printf("Senha inválida.\n");
+        }
+    } else {
+        printf("CPF não encontrado.\n");
+    }
+
+    return OK;
+}
