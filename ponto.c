@@ -73,3 +73,56 @@ ERROS listar(Arquivos arquivos[], int *pos) {
 
     return OK;
 }
+
+
+
+ERROS debito(Arquivos arquivos[], int *pos) {
+    char cpf[15];
+    printf("Digite seu CPF: ");
+    scanf("%14s", cpf);
+
+    int found = 0;
+    Arquivos *cliente = NULL;
+    for (int i = 0; i < *pos; i++) {
+        if (strcmp(arquivos[i].cpf, cpf) == 0) {
+            cliente = &arquivos[i];
+            found = 1;
+            break;
+        }
+    }
+
+    if (found) {
+        int senha;
+        printf("Digite sua senha: ");
+        scanf("%d", &senha);
+
+        if (senha == cliente->senha) {
+            float valor;
+            printf("Digite o valor do saque: ");
+            scanf("%f", &valor);
+
+            float saldo_minimo = (cliente->tipo == 0) ? -1000.0 : -5000.0;
+
+            if (cliente->saldo - valor >= saldo_minimo) {
+                float taxa = (cliente->tipo == 0) ? 0.05 : 0.03;
+                float valor_final = valor + (valor * taxa);
+                cliente->saldo -= valor_final;
+
+                printf("R$ %.2f foram debitados de sua conta.\n", valor_final);
+
+                
+                cliente->transacoes[cliente->num_transacoes].tipo = 'debito';
+                cliente->transacoes[cliente->num_transacoes].valor = valor_final;
+                cliente->num_transacoes++;
+            } else {
+                printf("Saldo limite alcançado.\n");
+            }
+        } else {
+            printf("Senha inválida.\n");
+        }
+    } else {
+        printf("CPF não encontrado.\n");
+    }
+
+    return OK;
+}
