@@ -166,3 +166,42 @@ ERROS deposito(Arquivos arquivos[], int *pos) {
 
     return OK;
 }
+
+
+
+ERROS extrato(Arquivos arquivos[], int *pos) {
+    char cpf[15];
+    printf("Digite seu CPF: ");
+    scanf("%14s", cpf);
+
+    Arquivos *cliente = NULL;
+    for (int i = 0; i < *pos; i++) {
+        if (strcmp(arquivos[i].cpf, cpf) == 0) {
+            cliente = &arquivos[i];
+            break;
+        }
+    }
+
+    if (cliente != NULL) {
+        int senha;
+        printf("Digite sua senha: ");
+        scanf("%d", &senha);
+
+        if (senha == cliente->senha) {
+            printf("Extrato do Cliente:\n");
+            printf("Nome: %s\n", cliente->nome);
+            printf("CPF: %s\n", cliente->cpf);
+            printf("Saldo: %.2f\n", cliente->saldo);
+            printf("Transações:\n");
+            for (int i = 0; i < cliente->num_transacoes; i++) {
+                printf("Tipo: %c, Valor: %.2f\n", cliente->transacoes[i].tipo, cliente->transacoes[i].valor);
+            }
+        } else {
+            printf("Senha inválida.\n");
+        }
+    } else {
+        printf("CPF não encontrado.\n");
+    }
+
+    return OK;
+}
